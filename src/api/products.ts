@@ -1,7 +1,7 @@
 import { httpGet } from './httpClient';
 import type { ProductsResponse } from '../types/product';
 
-const DEFAULT_LIMIT = 10;
+const DEFAULT_LIMIT = 5;
 
 export interface FetchProductsParams {
   searchQuery?: string;

@@ -3,7 +3,7 @@ import { useAuth } from '../hooks/useAuth';
 import type { AuthCredentials } from '../types/auth';
 import { ApiError } from '../api/httpClient';
 import logoSrc from '../assets/logo.png';
-import { UsernameField } from './UsernameField';
+import { TextInputField } from './TextInputField';
 import { PasswordField } from './PasswordField';
 import { CheckboxField } from './CheckboxField';
 
@@ -112,7 +112,9 @@ export function LoginForm() {
         <h1 className="card-title">Добро пожаловать!</h1>
         <p className="card-subtitle">Пожалуйста, авторизируйтесь</p>
 
-        <UsernameField
+        <TextInputField
+          name="username"
+          label="Логин"
           value={values.username}
           onChange={handleChange}
           onBlur={handleBlur}
@@ -120,6 +122,8 @@ export function LoginForm() {
           disabled={isLoading}
           error={errors.username}
           touched={touched.username}
+          hasPrependIcon
+          hasAppendIcon
         />
 
         <PasswordField

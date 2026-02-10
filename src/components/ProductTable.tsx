@@ -54,7 +54,7 @@ export function ProductTable({
   };
 
   return (
-    <div className="card table-card">
+    <div className="table-card">
       {isLoading && <ProgressBar />}
 
       <div className="table-wrapper">
@@ -65,10 +65,6 @@ export function ProductTable({
                 Наименование
                 {sort.key === 'title' && <SortIndicator direction={sort.direction} />}
               </th>
-              <th onClick={() => handleSortClick('price')}>
-                Цена
-                {sort.key === 'price' && <SortIndicator direction={sort.direction} />}
-              </th>
               <th onClick={() => handleSortClick('brand')}>
                 Вендор
                 {sort.key === 'brand' && <SortIndicator direction={sort.direction} />}
@@ -78,11 +74,14 @@ export function ProductTable({
                 {sort.key === 'sku' && <SortIndicator direction={sort.direction} />}
               </th>
               <th onClick={() => handleSortClick('rating')}>
-                Рейтинг
+                Оценка
                 {sort.key === 'rating' && <SortIndicator direction={sort.direction} />}
               </th>
+              <th onClick={() => handleSortClick('price')}>
+                Цена
+                {sort.key === 'price' && <SortIndicator direction={sort.direction} />}
+              </th>
               <th>Остаток</th>
-              <th>Категория</th>
             </tr>
           </thead>
           <tbody>
@@ -104,28 +103,29 @@ export function ProductTable({
               sortedProducts.map((product) => (
                 <tr key={product.id}>
                   <td className="product-title">
-                    <div className="product-title-main">{product.title}</div>
-                    <div className="product-sub">
-                      <span>{product.brand}</span>
-                      {product.thumbnail && (
-                        <img
-                          src={product.thumbnail}
-                          alt={product.title}
-                          className="product-thumbnail"
-                        />
-                      )}
+                    {product.thumbnail && (
+                      <img
+                        src={product.thumbnail}
+                        alt={product.title}
+                        className="product-thumbnail"
+                      />
+                    )}
+                    <div>
+                      <p className="product-title-main">{product.title}</p>
+                      <p className="product-sub">
+                        <span>{product.category}</span>
+                      </p>
                     </div>
                   </td>
-                  <td>
-                    {product.price.toLocaleString('ru-RU', { style: 'currency', currency: 'USD' })}
-                  </td>
-                  <td>{product.brand}</td>
+                  <td className='product-brand'>{product.brand}</td>
                   <td>{product.sku}</td>
                   <td className={product.rating < 3 ? 'rating rating-low' : 'rating'}>
                     {product.rating.toFixed(1)}
                   </td>
+                  <td>
+                    {product.price.toLocaleString('ru-RU', { style: 'currency', currency: 'USD' })}
+                  </td>
                   <td>{product.stock}</td>
-                  <td>{product.category}</td>
                 </tr>
               ))}
           </tbody>

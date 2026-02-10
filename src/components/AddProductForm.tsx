@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import type { Product } from '../types/product';
+import { TextInputField } from './TextInputField';
+import { ClearIcon } from './icons/ClearIcon';
 
 interface AddProductFormProps {
   onProductAdded: (product: Product) => void;
@@ -61,6 +63,10 @@ export function AddProductForm({ onProductAdded, onClose }: AddProductFormProps)
       ...prev,
       [name]: value,
     }));
+    setErrors((prev) => ({
+      ...prev,
+      [name]: undefined,
+    }));
   };
 
   const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
@@ -112,68 +118,52 @@ export function AddProductForm({ onProductAdded, onClose }: AddProductFormProps)
   return (
     <div className="modal-backdrop">
       <div className="card modal">
-        <h2 className="card-title">Добавить товар</h2>
+        <div className="modal-header">
+          <h2 className="modal-title">Добавить товар</h2>
+          <button className="close-modal-btn" onClick={onClose} aria-label="Закрыть модальное окно">
+            <ClearIcon />
+          </button>
+        </div>
         <form onSubmit={handleSubmit} noValidate>
-          <div className="field-group">
-            <label htmlFor="title">Наименование</label>
-            <input
-              id="title"
-              name="title"
-              type="text"
-              className={touched.title && errors.title ? 'input error' : 'input'}
-              value={values.title}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              required
-            />
-            {touched.title && errors.title && <span className="field-error">{errors.title}</span>}
-          </div>
+          <TextInputField
+            name="title"
+            label="Наименование"
+            value={values.title}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={errors.title}
+            touched={touched.title}
+          />
 
-          <div className="field-group">
-            <label htmlFor="price">Цена</label>
-            <input
-              id="price"
-              name="price"
-              type="text"
-              inputMode="decimal"
-              className={touched.price && errors.price ? 'input error' : 'input'}
-              value={values.price}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              required
-            />
-            {touched.price && errors.price && <span className="field-error">{errors.price}</span>}
-          </div>
+          <TextInputField
+            name="price"
+            label="Цена"
+            value={values.price}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={errors.price}
+            touched={touched.price}
+          />
 
-          <div className="field-group">
-            <label htmlFor="brand">Вендор</label>
-            <input
-              id="brand"
-              name="brand"
-              type="text"
-              className={touched.brand && errors.brand ? 'input error' : 'input'}
-              value={values.brand}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              required
-            />
-            {touched.brand && errors.brand && <span className="field-error">{errors.brand}</span>}
-          </div>
+          <TextInputField
+            name="brand"
+            label="Вендор"
+            value={values.brand}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={errors.brand}
+            touched={touched.brand}
+          />
 
-          <div className="field-group">
-            <label htmlFor="sku">Артикул</label>
-            <input
-              id="sku"
-              name="sku"
-              type="text"
-              className={touched.sku && errors.sku ? 'input error' : 'input'}
-              value={values.sku}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              required
-            />
-            {touched.sku && errors.sku && <span className="field-error">{errors.sku}</span>}
-          </div>
+          <TextInputField
+            name="sku"
+            label="Артикул"
+            value={values.sku}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={errors.sku}
+            touched={touched.sku}
+          />
 
           <div className="modal-actions">
             <button type="button" className="button secondary" onClick={onClose}>

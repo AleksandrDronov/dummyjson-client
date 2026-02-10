@@ -2,7 +2,7 @@ import { httpGet, httpPost } from './httpClient';
 import type { AuthCredentials, AuthResponse } from '../types/auth';
 
 /** Access token: 15–30 мин. expiresInMins: 15 */
-const ACCESS_TOKEN_EXPIRES_MINS = 15;
+const ACCESS_TOKEN_EXPIRES_MINS = 30;
 
 export async function loginRequest(credentials: AuthCredentials): Promise<AuthResponse> {
   return httpPost<Record<string, unknown>, AuthResponse>(

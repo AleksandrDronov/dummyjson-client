@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import type { Product } from '../types/product';
 import { fetchProducts } from '../api/products';
@@ -7,9 +7,13 @@ import { ProductTable } from '../components/ProductTable';
 import { AddProductForm } from '../components/AddProductForm';
 import { Toast } from '../components/Toast';
 import { loadInitialSort, type SortState } from '../utils/sortUtils';
+import { PlusIcon } from '../components/icons/PlusIcon';
+import { ArrowsIcon } from '../components/icons/ArrowsIcon';
+import { Pagination } from '../components/icons/Pagination';
+import { SearchField } from '../components/SearchField';
 
 export function ProductsPage() {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [localProducts, setLocalProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -21,7 +25,7 @@ export function ProductsPage() {
   const [toastMessage, setToastMessage] = useState<string>('');
   const [page, setPage] = useState<number>(1);
   const [total, setTotal] = useState<number>(0);
-  const PAGE_SIZE = 10;
+  const PAGE_SIZE = 5;
 
   const startLoading = () => {
     setIsLoading(true);
@@ -31,30 +35,38 @@ export function ProductsPage() {
     setIsLoading(false);
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      startLoading();
-      setError(undefined);
-      try {
-        const response = await fetchProducts({
-          searchQuery: debouncedSearch,
-          skip: (page - 1) * PAGE_SIZE,
-          limit: PAGE_SIZE,
-        });
-        setProducts(response.products);
-        setTotal(response.total);
-      } catch {
-        setError('Не удалось загрузить список товаров');
-      } finally {
-        stopLoading();
-      }
-    };
-    fetchData();
+  const fetchData = useCallback(async () => {
+    startLoading();
+    setError(undefined);
+    try {
+      const response = await fetchProducts({
+        searchQuery: debouncedSearch,
+        skip: (page - 1) * PAGE_SIZE,
+        limit: PAGE_SIZE,
+      });
+      setProducts(response.products);
+      setTotal(response.total);
+    } catch {
+      setError('Не удалось загрузить список товаров');
+    } finally {
+      stopLoading();
+    }
   }, [debouncedSearch, page]);
+
+  useEffect(() => {
+    fetchData();
+  }, [debouncedSearch, page, fetchData]);
 
   const allProducts = useMemo(() => [...localProducts, ...products], [localProducts, products]);
 
   const totalPages = Math.ceil(total / PAGE_SIZE);
+
+  const calculatePaginationInfo = () => {
+    const startIndex = (page - 1) * PAGE_SIZE + 1;
+    let endIndex = page * PAGE_SIZE;
+    endIndex = endIndex > total ? total : endIndex;
+    return `${startIndex}-${endIndex} из ${total}`;
+  };
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
@@ -71,50 +83,41 @@ export function ProductsPage() {
     setToastMessage('');
   };
 
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
+    setPage(1);
+  };
+
   return (
     <div className="page">
       <header className="page-header">
-        <div className="page-header-left">
-          <h1>Товары</h1>
-          <p className="page-subtitle">Список товаров из DummyJSON</p>
-        </div>
-        <div className="page-header-right">
-          {user && (
-            <div className="user-info">
-              <span className="user-name">
-                {user.firstName} {user.lastName}
-              </span>
-            </div>
-          )}
-          <button type="button" className="button secondary" onClick={logout}>
-            Выйти
-          </button>
-        </div>
+        <h1>Товары</h1>
+        <SearchField value={searchQuery} onChange={handleSearchChange} />
+        <button type="button" className="button secondary small" onClick={logout}>
+          Выйти
+        </button>
       </header>
 
       <main className="page-content">
         <div className="toolbar">
-          <div className="toolbar-left">
-            <input
-              type="search"
-              className="input"
-              placeholder="Поиск по наименованию или описанию..."
-              value={searchQuery}
-              onChange={(event) => {
-                setSearchQuery(event.target.value);
-                setPage(1); // сбросить страницу при поиске
-              }}
-            />
-          </div>
-          <div className="toolbar-right">
-            <button
-              type="button"
-              className="button primary"
-              onClick={() => setIsAddModalOpen(true)}
-            >
-              Добавить товар
-            </button>
-          </div>
+          <h2>Все позиции</h2>
+          <button
+            type="button"
+            className="button secondary small"
+            onClick={fetchData}
+            title="Обновить"
+            aria-label="Обновить список товаров"
+          >
+            <ArrowsIcon />
+          </button>
+          <button
+            type="button"
+            className="button primary small"
+            onClick={() => setIsAddModalOpen(true)}
+          >
+            <PlusIcon />
+            Добавить
+          </button>
         </div>
 
         <ProductTable
@@ -124,30 +127,11 @@ export function ProductsPage() {
           sort={sort}
           onSortChange={setSort}
         />
-
-        <div
-          className="pagination"
-          style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}
-        >
-          <button
-            className="button"
-            onClick={() => handlePageChange(page - 1)}
-            disabled={page === 1}
-            style={{ marginRight: 8 }}
-          >
-            Назад
-          </button>
-          <span style={{ alignSelf: 'center' }}>
-            Страница {page} из {totalPages || 1}
+        <div className="pagination-toolbar">
+          <span className="pagination-info">
+            Показано {calculatePaginationInfo()}
           </span>
-          <button
-            className="button"
-            onClick={() => handlePageChange(page + 1)}
-            disabled={page === totalPages || totalPages === 0}
-            style={{ marginLeft: 8 }}
-          >
-            Вперёд
-          </button>
+          <Pagination currentPage={page} totalPages={totalPages} onPageChange={handlePageChange} />
         </div>
       </main>
 

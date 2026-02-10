@@ -2,17 +2,23 @@ import { UserIcon } from './icons/UserIcon';
 import { ClearIcon } from './icons/ClearIcon';
 import React from 'react';
 
-interface UsernameFieldProps {
+interface TextInputFieldProps {
+  name: string;
+  label?: string;
   value: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur: (event: React.FocusEvent<HTMLInputElement>) => void;
-  onClear: () => void;
+  onClear?: () => void;
   disabled?: boolean;
   error?: string;
   touched?: boolean;
+  hasAppendIcon?: boolean;
+  hasPrependIcon?: boolean;
 }
 
-export function UsernameField({
+export function TextInputField({
+  name,
+  label,
   value,
   onChange,
   onBlur,
@@ -20,16 +26,18 @@ export function UsernameField({
   disabled = false,
   error,
   touched,
-}: UsernameFieldProps) {
+  hasAppendIcon = false,
+  hasPrependIcon = false,
+}: TextInputFieldProps) {
   return (
     <div className="field-group">
-      <label htmlFor="username">Логин</label>
-      <div className="input-icon-wrapper">
+      <label htmlFor={name}>{label}</label>
+      <div className={hasAppendIcon ? 'input-icon-wrapper' : ''}>
         <input
-          id="username"
-          name="username"
+          id={name}
+          name={name}
           type="text"
-          autoComplete="username"
+          autoComplete={name}
           value={value}
           onChange={onChange}
           onBlur={onBlur}
@@ -37,10 +45,10 @@ export function UsernameField({
           className={touched && error ? 'input error' : 'input'}
           required
         />
-        <span className="input-icon" aria-hidden="true">
+        {hasAppendIcon && <span className="input-icon" aria-hidden="true">
           <UserIcon />
-        </span>
-        {value && !disabled && (
+        </span>}
+        {hasPrependIcon && value && !disabled && (
           <button
             type="button"
             className="clear-input-btn"
