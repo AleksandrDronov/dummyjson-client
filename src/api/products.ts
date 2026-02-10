@@ -1,5 +1,5 @@
-import { httpGet } from "./httpClient";
-import type { ProductsResponse } from "../types/product";
+import { httpGet } from './httpClient';
+import type { ProductsResponse } from '../types/product';
 
 const DEFAULT_LIMIT = 10;
 
@@ -20,10 +20,8 @@ export async function fetchProducts({
   });
 
   if (searchQuery && searchQuery.trim().length > 0) {
-    params.set("q", searchQuery.trim());
-    return httpGet<ProductsResponse>(
-      `/api/products/search?${params.toString()}`,
-    );
+    params.set('q', searchQuery.trim());
+    return httpGet<ProductsResponse>(`/api/products/search?${params.toString()}`);
   }
 
   return httpGet<ProductsResponse>(`/api/products?${params.toString()}`);

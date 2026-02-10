@@ -1,5 +1,5 @@
-import { createContext } from "react";
-import type { AuthCredentials, AuthState } from "../types/auth";
+import { createContext } from 'react';
+import type { AuthCredentials, AuthState } from '../types/auth';
 
 export interface AuthContextValue extends AuthState {
   login: (credentials: AuthCredentials) => Promise<void>;

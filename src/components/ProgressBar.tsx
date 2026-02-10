@@ -25,4 +25,3 @@ export function ProgressBar() {
     </div>
   );
 }
-

@@ -95,7 +95,12 @@ a.register-link__a {
 }
 
 :root {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color: #0f172a;
@@ -216,7 +221,9 @@ a {
   margin-left: auto;
   margin-right: auto;
   border: 1px solid #e5e7eb;
-  box-shadow: 0 12px 8px 0 rgba(0, 0, 0, 0.03), 0 0 0 2px #fff;
+  box-shadow:
+    0 12px 8px 0 rgba(0, 0, 0, 0.03),
+    0 0 0 2px #fff;
 }
 
 .logo {
@@ -339,10 +346,12 @@ a {
 .checkbox-custom {
   width: 20px;
   height: 20px;
-  border: 2px solid #C9C9C9;
+  border: 2px solid #c9c9c9;
   border-radius: 6px;
   background: #fff;
-  transition: border-color 0.2s, background 0.2s;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -350,13 +359,13 @@ a {
   position: relative;
 }
 
-.checkbox-input:checked+.checkbox-custom {
-  background: #242EDB;
-  border-color: #242EDB;
+.checkbox-input:checked + .checkbox-custom {
+  background: #242edb;
+  border-color: #242edb;
 }
 
-.checkbox-input:checked+.checkbox-custom::after {
-  content: "";
+.checkbox-input:checked + .checkbox-custom::after {
+  content: '';
   display: block;
   width: 12px;
   height: 6px;
@@ -395,7 +404,7 @@ a {
 
 .button.primary {
   color: #ffffff;
-  background-color: #242EDB;
+  background-color: #242edb;
 }
 
 .button.primary:hover {

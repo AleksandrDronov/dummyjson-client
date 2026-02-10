@@ -1,14 +1,13 @@
-import { useState } from "react";
-import { useAuth } from "../hooks/useAuth";
-import { EyeIcon } from "./icons/EyeIcon";
-import { EyeOffIcon } from "./icons/EyeOffIcon";
-import { UserIcon } from "./icons/UserIcon";
-import type { AuthCredentials } from "../types/auth";
-import { ApiError } from "../api/httpClient";
-import logoSrc from "../assets/logo.png";
-import { LockIcon } from "./icons/LockIcon";
-import { ClearIcon } from "./icons/ClearIcon";
- 
+import { useState } from 'react';
+import { useAuth } from '../hooks/useAuth';
+import { EyeIcon } from './icons/EyeIcon';
+import { EyeOffIcon } from './icons/EyeOffIcon';
+import { UserIcon } from './icons/UserIcon';
+import type { AuthCredentials } from '../types/auth';
+import { ApiError } from '../api/httpClient';
+import logoSrc from '../assets/logo.png';
+import { LockIcon } from './icons/LockIcon';
+import { ClearIcon } from './icons/ClearIcon';
 
 interface FieldErrors {
   username?: string;
@@ -17,8 +16,8 @@ interface FieldErrors {
 }
 
 const initialValues: AuthCredentials = {
-  username: "",
-  password: "",
+  username: '',
+  password: '',
   rememberMe: false,
 };
 
@@ -39,10 +38,10 @@ export function LoginForm() {
     const nextErrors: FieldErrors = {};
 
     if (!current.username.trim()) {
-      nextErrors.username = "Введите логин";
+      nextErrors.username = 'Введите логин';
     }
     if (!current.password.trim()) {
-      nextErrors.password = "Введите пароль";
+      nextErrors.password = 'Введите пароль';
     }
     return nextErrors;
   };
@@ -52,7 +51,7 @@ export function LoginForm() {
 
     setValues((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: type === 'checkbox' ? checked : value,
     }));
 
     setErrors((prev) => ({
@@ -90,20 +89,17 @@ export function LoginForm() {
       await login(values);
     } catch (error) {
       if (error instanceof ApiError) {
-        const body = error.body as
-          | { message?: string; error?: string }
-          | undefined;
-        const message =
-          body?.message ?? body?.error ?? "Не удалось выполнить вход";
+        const body = error.body as { message?: string; error?: string } | undefined;
+        const message = body?.message ?? body?.error ?? 'Не удалось выполнить вход';
         setErrors({ apiError: message });
       } else {
-        setErrors({ apiError: "Произошла неизвестная ошибка" });
+        setErrors({ apiError: 'Произошла неизвестная ошибка' });
       }
     }
   };
 
-   const handleClearUsername = () => {
-    setValues((prev) => ({ ...prev, username: "" }));
+  const handleClearUsername = () => {
+    setValues((prev) => ({ ...prev, username: '' }));
     setErrors((prev) => ({ ...prev, username: undefined }));
     setTouched((prev) => ({ ...prev, username: false }));
   };
@@ -129,9 +125,7 @@ export function LoginForm() {
               onChange={handleChange}
               onBlur={handleBlur}
               disabled={isLoading}
-              className={
-                touched.username && errors.username ? "input error" : "input"
-              }
+              className={touched.username && errors.username ? 'input error' : 'input'}
               required
             />
             <span className="input-icon" aria-hidden="true">
@@ -149,9 +143,7 @@ export function LoginForm() {
               </button>
             )}
           </div>
-          <span className="field-error">
-            {touched.username && errors.username}
-          </span>
+          <span className="field-error">{touched.username && errors.username}</span>
         </div>
 
         <div className="field-group">
@@ -160,23 +152,21 @@ export function LoginForm() {
             <input
               id="password"
               name="password"
-              type={showPassword ? "text" : "password"}
+              type={showPassword ? 'text' : 'password'}
               autoComplete="current-password"
               value={values.password}
               onChange={handleChange}
               onBlur={handleBlur}
               disabled={isLoading}
               className={
-                (touched.password && errors.password
-                  ? "input error"
-                  : "input") + " password-input"
+                (touched.password && errors.password ? 'input error' : 'input') + ' password-input'
               }
               required
             />
             <button
               type="button"
               tabIndex={-1}
-              aria-label={showPassword ? "Скрыть пароль" : "Показать пароль"}
+              aria-label={showPassword ? 'Скрыть пароль' : 'Показать пароль'}
               onClick={() => setShowPassword((v) => !v)}
               className="password-toggle-btn"
             >
@@ -186,9 +176,7 @@ export function LoginForm() {
               <LockIcon />
             </span>
           </div>
-          <span className="field-error">
-            {touched.password && errors.password}
-          </span>
+          <span className="field-error">{touched.password && errors.password}</span>
         </div>
 
         <div className="field-row">
@@ -209,7 +197,7 @@ export function LoginForm() {
         {errors.apiError && <div className="form-error">{errors.apiError}</div>}
 
         <button type="submit" className="button primary" disabled={isLoading}>
-          {isLoading ? "Вход..." : "Войти"}
+          {isLoading ? 'Вход...' : 'Войти'}
         </button>
 
         <p className="auth-hint">
@@ -219,7 +207,9 @@ export function LoginForm() {
         </p>
         <div className="register-link">
           <span>Нет аккаунта? </span>
-          <a href="#" className="register-link__a">Создать</a>
+          <a href="#" className="register-link__a">
+            Создать
+          </a>
         </div>
       </form>
     </div>

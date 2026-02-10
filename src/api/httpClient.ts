@@ -1,4 +1,3 @@
-
 const AUTH_PATHS = ['/api/auth/login', '/api/auth/refresh', '/api/auth/logout', '/api/auth/me'];
 
 function needsAuthToken(path: string): boolean {
@@ -66,4 +65,3 @@ async function httpRequest<T>(path: string, options: HttpOptions): Promise<T> {
 
   return data as T;
 }
-

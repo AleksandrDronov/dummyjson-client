@@ -7,7 +7,11 @@ export interface SortState {
 
 const SORT_STORAGE_KEY = 'dummyjson_products_sort';
 
-export function compareValues(a: string | number, b: string | number, direction: SortDirection): number {
+export function compareValues(
+  a: string | number,
+  b: string | number,
+  direction: SortDirection,
+): number {
   if (a === b) return 0;
   const multiplier = direction === 'asc' ? 1 : -1;
   if (typeof a === 'number' && typeof b === 'number') {

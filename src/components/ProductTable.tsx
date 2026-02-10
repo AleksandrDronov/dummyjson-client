@@ -12,7 +12,13 @@ interface ProductTableProps {
   onSortChange: (next: SortState) => void;
 }
 
-export function ProductTable({ products, isLoading, error, sort, onSortChange }: ProductTableProps) {
+export function ProductTable({
+  products,
+  isLoading,
+  error,
+  sort,
+  onSortChange,
+}: ProductTableProps) {
   const [internalSort] = useState<SortState>(sort);
 
   const sortedProducts = useMemo(() => {
@@ -110,7 +116,9 @@ export function ProductTable({ products, isLoading, error, sort, onSortChange }:
                       )}
                     </div>
                   </td>
-                  <td>{product.price.toLocaleString('ru-RU', { style: 'currency', currency: 'USD' })}</td>
+                  <td>
+                    {product.price.toLocaleString('ru-RU', { style: 'currency', currency: 'USD' })}
+                  </td>
                   <td>{product.brand}</td>
                   <td>{product.sku}</td>
                   <td className={product.rating < 3 ? 'rating rating-low' : 'rating'}>
@@ -134,4 +142,3 @@ interface SortIndicatorProps {
 function SortIndicator({ direction }: SortIndicatorProps) {
   return <span className="sort-indicator">{direction === 'asc' ? '▲' : '▼'}</span>;
 }
-

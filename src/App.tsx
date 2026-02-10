@@ -8,11 +8,7 @@ function AppContent() {
   const isAuthenticated = Boolean(user);
 
   if (isLoading) {
-    return (
-      <div className="app-loading">
-        Загрузка...
-      </div>
-    );
+    return <div className="app-loading">Загрузка...</div>;
   }
 
   return isAuthenticated ? <ProductsPage /> : <LoginForm />;
@@ -25,4 +21,3 @@ export default function App() {
     </AuthProvider>
   );
 }
-

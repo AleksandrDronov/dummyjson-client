@@ -16,4 +16,3 @@ export interface ProductsResponse {
   skip: number;
   limit: number;
 }
-

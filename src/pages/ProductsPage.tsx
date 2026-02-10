@@ -1,12 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
-import { useAuth } from "../hooks/useAuth";
-import type { Product } from "../types/product";
-import { fetchProducts } from "../api/products";
-import { useDebouncedValue } from "../hooks/useDebouncedValue";
-import { ProductTable } from "../components/ProductTable";
-import { AddProductForm } from "../components/AddProductForm";
-import { Toast } from "../components/Toast";
-import { loadInitialSort, type SortState } from "../utils/sortUtils";
+import { useEffect, useMemo, useState } from 'react';
+import { useAuth } from '../hooks/useAuth';
+import type { Product } from '../types/product';
+import { fetchProducts } from '../api/products';
+import { useDebouncedValue } from '../hooks/useDebouncedValue';
+import { ProductTable } from '../components/ProductTable';
+import { AddProductForm } from '../components/AddProductForm';
+import { Toast } from '../components/Toast';
+import { loadInitialSort, type SortState } from '../utils/sortUtils';
 
 export function ProductsPage() {
   const { user, logout } = useAuth();
@@ -14,11 +14,11 @@ export function ProductsPage() {
   const [localProducts, setLocalProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>(undefined);
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const debouncedSearch = useDebouncedValue(searchQuery, 400);
   const [sort, setSort] = useState<SortState>(() => loadInitialSort());
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
-  const [toastMessage, setToastMessage] = useState<string>("");
+  const [toastMessage, setToastMessage] = useState<string>('');
   const [page, setPage] = useState<number>(1);
   const [total, setTotal] = useState<number>(0);
   const PAGE_SIZE = 10;
@@ -44,7 +44,7 @@ export function ProductsPage() {
         setProducts(response.products);
         setTotal(response.total);
       } catch {
-        setError("Не удалось загрузить список товаров");
+        setError('Не удалось загрузить список товаров');
       } finally {
         stopLoading();
       }
@@ -52,10 +52,7 @@ export function ProductsPage() {
     fetchData();
   }, [debouncedSearch, page]);
 
-  const allProducts = useMemo(
-    () => [...localProducts, ...products],
-    [localProducts, products],
-  );
+  const allProducts = useMemo(() => [...localProducts, ...products], [localProducts, products]);
 
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
@@ -67,11 +64,11 @@ export function ProductsPage() {
 
   const handleProductAdded = (product: Product) => {
     setLocalProducts((prev) => [product, ...prev]);
-    setToastMessage("Товар успешно добавлен");
+    setToastMessage('Товар успешно добавлен');
   };
 
   const handleToastClose = () => {
-    setToastMessage("");
+    setToastMessage('');
   };
 
   return (
@@ -128,7 +125,10 @@ export function ProductsPage() {
           onSortChange={setSort}
         />
 
-        <div className="pagination" style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
+        <div
+          className="pagination"
+          style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}
+        >
           <button
             className="button"
             onClick={() => handlePageChange(page - 1)}

@@ -188,4 +188,3 @@ export function AddProductForm({ onProductAdded, onClose }: AddProductFormProps)
     </div>
   );
 }
-

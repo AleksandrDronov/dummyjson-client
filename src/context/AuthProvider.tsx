@@ -1,19 +1,7 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
-import type {
-  AuthCredentials,
-  AuthState,
-  AuthUser,
-  AuthResponse,
-} from "../types/auth";
-import { AuthContext, type AuthContextValue } from "./AuthContext";
-import { loginRequest, logoutRequest, meRequest } from "../api/auth";
-
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import type { AuthCredentials, AuthState, AuthUser, AuthResponse } from '../types/auth';
+import { AuthContext, type AuthContextValue } from './AuthContext';
+import { loginRequest, logoutRequest, meRequest } from '../api/auth';
 
 function mapResponseToUser(response: AuthResponse): AuthUser {
   return {
