@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { Product } from '../types/product';
 import { TextInputField } from './TextInputField';
 import { ClearIcon } from './icons/ClearIcon';
@@ -38,6 +38,39 @@ export function AddProductForm({ onProductAdded, onClose }: AddProductFormProps)
     brand: false,
     sku: false,
   });
+  const [isOpen, setIsOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+
+  const handleClose = useCallback(() => {
+    setIsClosing(true);
+    setTimeout(() => {
+      onClose();
+    }, 300);
+  }, [onClose]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsOpen(true);
+    }, 10);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handleClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleClose]);
+
+  const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (event.target === event.currentTarget) {
+      handleClose();
+    }
+  };
 
   const validate = (current: AddProductFormValues): AddProductFormErrors => {
     const next: AddProductFormErrors = {};
@@ -81,7 +114,7 @@ export function AddProductForm({ onProductAdded, onClose }: AddProductFormProps)
     }));
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     const validationErrors = validate(values);
     setErrors(validationErrors);
@@ -112,15 +145,24 @@ export function AddProductForm({ onProductAdded, onClose }: AddProductFormProps)
 
     onProductAdded(newProduct);
     setValues(initialValues);
-    onClose();
+    handleClose();
   };
 
   return (
-    <div className="modal-backdrop">
-      <div className="card modal">
+    <div
+      className={`modal-backdrop ${isOpen && !isClosing ? 'open' : ''} ${isClosing ? 'closing' : ''}`}
+      onClick={handleBackdropClick}
+    >
+      <div
+        className={`card modal ${isOpen && !isClosing ? 'open' : ''} ${isClosing ? 'closing' : ''}`}
+      >
         <div className="modal-header">
           <h2 className="modal-title">Добавить товар</h2>
-          <button className="close-modal-btn" onClick={onClose} aria-label="Закрыть модальное окно">
+          <button
+            className="close-modal-btn"
+            onClick={handleClose}
+            aria-label="Закрыть модальное окно"
+          >
             <ClearIcon />
           </button>
         </div>
@@ -166,7 +208,7 @@ export function AddProductForm({ onProductAdded, onClose }: AddProductFormProps)
           />
 
           <div className="modal-actions">
-            <button type="button" className="button secondary" onClick={onClose}>
+            <button type="button" className="button secondary" onClick={handleClose}>
               Отмена
             </button>
             <button type="submit" className="button primary">

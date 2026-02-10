@@ -127,6 +127,7 @@ export function ProductsPage() {
           sort={sort}
           onSortChange={setSort}
         />
+        
         <div className="pagination-toolbar">
           <span className="pagination-info">
             Показано {calculatePaginationInfo()}
