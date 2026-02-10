@@ -1,13 +1,11 @@
 import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
-import { EyeIcon } from './icons/EyeIcon';
-import { EyeOffIcon } from './icons/EyeOffIcon';
-import { UserIcon } from './icons/UserIcon';
 import type { AuthCredentials } from '../types/auth';
 import { ApiError } from '../api/httpClient';
 import logoSrc from '../assets/logo.png';
-import { LockIcon } from './icons/LockIcon';
-import { ClearIcon } from './icons/ClearIcon';
+import { UsernameField } from './UsernameField';
+import { PasswordField } from './PasswordField';
+import { CheckboxField } from './CheckboxField';
 
 interface FieldErrors {
   username?: string;
@@ -110,89 +108,38 @@ export function LoginForm() {
         <div className="logo-wrapper">
           <img src={logoSrc} alt="logo" className="logo" />
         </div>
+
         <h1 className="card-title">Добро пожаловать!</h1>
         <p className="card-subtitle">Пожалуйста, авторизируйтесь</p>
 
-        <div className="field-group">
-          <label htmlFor="username">Логин</label>
-          <div className="input-icon-wrapper">
-            <input
-              id="username"
-              name="username"
-              type="text"
-              autoComplete="username"
-              value={values.username}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              disabled={isLoading}
-              className={touched.username && errors.username ? 'input error' : 'input'}
-              required
-            />
-            <span className="input-icon" aria-hidden="true">
-              <UserIcon />
-            </span>
-            {values.username && !isLoading && (
-              <button
-                type="button"
-                className="clear-input-btn"
-                aria-label="Очистить логин"
-                tabIndex={0}
-                onClick={handleClearUsername}
-              >
-                <ClearIcon />
-              </button>
-            )}
-          </div>
-          <span className="field-error">{touched.username && errors.username}</span>
-        </div>
+        <UsernameField
+          value={values.username}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          onClear={handleClearUsername}
+          disabled={isLoading}
+          error={errors.username}
+          touched={touched.username}
+        />
 
-        <div className="field-group">
-          <label htmlFor="password">Пароль</label>
-          <div className="password-input-wrapper">
-            <input
-              id="password"
-              name="password"
-              type={showPassword ? 'text' : 'password'}
-              autoComplete="current-password"
-              value={values.password}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              disabled={isLoading}
-              className={
-                (touched.password && errors.password ? 'input error' : 'input') + ' password-input'
-              }
-              required
-            />
-            <button
-              type="button"
-              tabIndex={-1}
-              aria-label={showPassword ? 'Скрыть пароль' : 'Показать пароль'}
-              onClick={() => setShowPassword((v) => !v)}
-              className="password-toggle-btn"
-            >
-              {showPassword ? <EyeIcon /> : <EyeOffIcon />}
-            </button>
-            <span className="input-icon" aria-hidden="true">
-              <LockIcon />
-            </span>
-          </div>
-          <span className="field-error">{touched.password && errors.password}</span>
-        </div>
+        <PasswordField
+          value={values.password}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          setShowPassword={setShowPassword}
+          disabled={isLoading}
+          error={errors.password}
+          touched={touched.password}
+          showPassword={showPassword}
+        />
 
-        <div className="field-row">
-          <label className="checkbox-label custom-checkbox">
-            <input
-              type="checkbox"
-              name="rememberMe"
-              checked={values.rememberMe}
-              onChange={handleChange}
-              disabled={isLoading}
-              className="checkbox-input"
-            />
-            <span className="checkbox-custom" aria-hidden="true"></span>
-            <span className="checkbox-label-text">Запомнить меня</span>
-          </label>
-        </div>
+        <CheckboxField
+          name="rememberMe"
+          value={values.rememberMe}
+          onChange={handleChange}
+          disabled={isLoading}
+          label="Запомнить меня"
+        />
 
         {errors.apiError && <div className="form-error">{errors.apiError}</div>}
 
@@ -205,6 +152,7 @@ export function LoginForm() {
           <br />
           <code>emilys / emilyspass</code> (логин / пароль)
         </p>
+
         <div className="register-link">
           <span>Нет аккаунта? </span>
           <a href="#" className="register-link__a">
