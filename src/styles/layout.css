@@ -11,7 +11,6 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 300px;
   margin-bottom: 30px;
   background-color: #ffffff;
 }
@@ -24,6 +23,10 @@
 }
 
 .page-header .button {
+  width: auto;
+}
+
+.page-header .input-icon-wrapper {
   width: auto;
 }
 
