@@ -30,9 +30,9 @@ const initialValues: AddProductFormValues = {
 };
 
 export function AddProductForm({ onProductAdded, onClose }: AddProductFormProps) {
-  const [values, setValues] = useState<AddProductFormValues>(initialValues);
+  const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState<AddProductFormErrors>({});
-  const [touched, setTouched] = useState<Record<keyof AddProductFormValues, boolean>>({
+  const [touched, setTouched] = useState({
     title: false,
     price: false,
     brand: false,

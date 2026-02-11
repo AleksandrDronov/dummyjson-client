@@ -21,12 +21,9 @@ const initialValues: AuthCredentials = {
 
 export function LoginForm() {
   const { login, isLoading } = useAuth();
-  const [values, setValues] = useState<AuthCredentials>(initialValues);
+  const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState<FieldErrors>({});
-  const [touched, setTouched] = useState<{
-    username: boolean;
-    password: boolean;
-  }>({
+  const [touched, setTouched] = useState({
     username: false,
     password: false,
   });

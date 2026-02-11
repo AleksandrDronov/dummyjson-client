@@ -12,20 +12,21 @@ import { ArrowsIcon } from '../components/icons/ArrowsIcon';
 import { Pagination } from '../components/icons/Pagination';
 import { SearchField } from '../components/SearchField';
 
+const PAGE_SIZE = 5;
+
 export function ProductsPage() {
   const { logout } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [localProducts, setLocalProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearch = useDebouncedValue(searchQuery, 400);
   const [sort, setSort] = useState<SortState>(() => loadInitialSort());
-  const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
-  const [toastMessage, setToastMessage] = useState<string>('');
-  const [page, setPage] = useState<number>(1);
-  const [total, setTotal] = useState<number>(0);
-  const PAGE_SIZE = 5;
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
 
   const startLoading = () => {
     setIsLoading(true);
