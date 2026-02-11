@@ -21,59 +21,72 @@ export function ProductsPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
   const [searchQuery, setSearchQuery] = useState('');
-  const debouncedSearch = useDebouncedValue(searchQuery, 400);
+  const debouncedSearch = useDebouncedValue(searchQuery, 600);
   const [sort, setSort] = useState<SortState>(() => loadInitialSort());
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
 
-  const startLoading = () => {
-    setIsLoading(true);
-  };
-
-  const stopLoading = () => {
-    setIsLoading(false);
-  };
-
-  const fetchData = useCallback(async () => {
-    startLoading();
-    setError(undefined);
-    try {
-      const response = await fetchProducts({
-        searchQuery: debouncedSearch,
-        skip: (page - 1) * PAGE_SIZE,
-        limit: PAGE_SIZE,
-      });
-      setProducts(response.products);
-      setTotal(response.total);
-    } catch {
-      setError('Не удалось загрузить список товаров');
-    } finally {
-      stopLoading();
-    }
-  }, [debouncedSearch, page]);
+  const fetchData = useCallback(
+    async (controller?: AbortController) => {
+      setIsLoading(true);
+      setError(undefined);
+      try {
+        const response = await fetchProducts({
+          searchQuery: debouncedSearch,
+          skip: (page - 1) * PAGE_SIZE,
+          limit: PAGE_SIZE,
+        });
+        if (!controller?.signal.aborted) {
+          setProducts(response.products);
+          setTotal(response.total);
+        }
+      } catch {
+        if (!controller?.signal.aborted) {
+          setError('Не удалось загрузить список товаров');
+        }
+      } finally {
+        if (!controller?.signal.aborted) {
+          setIsLoading(false);
+        }
+      }
+    },
+    [debouncedSearch, page],
+  );
 
   useEffect(() => {
-    fetchData();
+    const controller = new AbortController();
+    fetchData(controller);
+    return () => controller.abort();
   }, [debouncedSearch, page, fetchData]);
 
-  const allProducts = useMemo(() => [...localProducts, ...products], [localProducts, products]);
+  const allProducts = useMemo(() => {
+    const filteredLocal = localProducts.filter((product) =>
+      product.title.toLowerCase().includes(debouncedSearch.toLowerCase()),
+    );
+    return [...filteredLocal, ...products];
+  }, [localProducts, products, debouncedSearch]);
 
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
-  const calculatePaginationInfo = () => {
+  const paginationInfo = useMemo(() => {
     const startIndex = (page - 1) * PAGE_SIZE + 1;
     let endIndex = page * PAGE_SIZE;
     endIndex = endIndex > total ? total : endIndex;
     return `${startIndex}-${endIndex} из ${total}`;
-  };
+  }, [page, total]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setPage(newPage);
     }
   };
+
+  const handleRefresh = () => {
+    const controller = new AbortController();
+    fetchData(controller);
+  }
 
   const handleProductAdded = (product: Product) => {
     setLocalProducts((prev) => [product, ...prev]);
@@ -87,6 +100,14 @@ export function ProductsPage() {
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
     setPage(1);
+  }
+
+  const handleOpenAddModal = () => {
+    setIsAddModalOpen(true);
+  };
+
+  const handleCloseAddModal = () => {
+    setIsAddModalOpen(false);
   };
 
   return (
@@ -105,17 +126,13 @@ export function ProductsPage() {
           <button
             type="button"
             className="button secondary small"
-            onClick={fetchData}
+            onClick={handleRefresh}
             title="Обновить"
             aria-label="Обновить список товаров"
           >
             <ArrowsIcon />
           </button>
-          <button
-            type="button"
-            className="button primary small"
-            onClick={() => setIsAddModalOpen(true)}
-          >
+          <button type="button" className="button primary small" onClick={handleOpenAddModal}>
             <PlusIcon />
             Добавить
           </button>
@@ -128,20 +145,15 @@ export function ProductsPage() {
           sort={sort}
           onSortChange={setSort}
         />
-        
+
         <div className="pagination-toolbar">
-          <span className="pagination-info">
-            Показано {calculatePaginationInfo()}
-          </span>
+          <span className="pagination-info">Показано {paginationInfo}</span>
           <Pagination currentPage={page} totalPages={totalPages} onPageChange={handlePageChange} />
         </div>
       </main>
 
       {isAddModalOpen && (
-        <AddProductForm
-          onProductAdded={handleProductAdded}
-          onClose={() => setIsAddModalOpen(false)}
-        />
+        <AddProductForm onProductAdded={handleProductAdded} onClose={handleCloseAddModal} />
       )}
 
       <Toast message={toastMessage} onClose={handleToastClose} />
