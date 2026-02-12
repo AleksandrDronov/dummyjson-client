@@ -19,7 +19,7 @@ interface HttpOptions extends RequestInit {
   _skipRetry?: boolean;
 }
 
-export async function httpGet<T>(path: string, options?: HttpOptions): Promise<T> {
+export function httpGet<T>(path: string, options?: HttpOptions): Promise<T> {
   return httpRequest<T>(path, { ...options, method: 'GET' });
 }
 
