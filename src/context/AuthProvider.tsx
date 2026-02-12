@@ -64,10 +64,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, []);
 
-  const logout = useCallback(() => {
-    void logoutRequest().catch(() => {
-      // ignore
-    });
+  const logout = useCallback(async () => {
+    await logoutRequest();
     setAuthState((prev) => ({ ...prev, user: null, rememberMe: false, isLoading: false }));
   }, []);
 

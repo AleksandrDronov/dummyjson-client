@@ -23,7 +23,7 @@ export async function httpGet<T>(path: string, options?: HttpOptions): Promise<T
   return httpRequest<T>(path, { ...options, method: 'GET' });
 }
 
-export async function httpPost<TRequest, TResponse>(
+export function httpPost<TRequest, TResponse>(
   path: string,
   body: TRequest,
   options?: HttpOptions,

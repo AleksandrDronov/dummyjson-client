@@ -9,7 +9,7 @@ export interface FetchProductsParams {
   limit?: number;
 }
 
-export async function fetchProducts({
+export function fetchProducts({
   searchQuery,
   skip = 0,
   limit = DEFAULT_LIMIT,

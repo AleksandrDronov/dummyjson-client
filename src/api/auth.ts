@@ -4,7 +4,7 @@ import type { AuthCredentials, AuthResponse } from '../types/auth';
 /** Access token: 15–30 мин. expiresInMins: 15 */
 const ACCESS_TOKEN_EXPIRES_MINS = 30;
 
-export async function loginRequest(credentials: AuthCredentials): Promise<AuthResponse> {
+export function loginRequest(credentials: AuthCredentials): Promise<AuthResponse> {
   return httpPost<Record<string, unknown>, AuthResponse>(
     '/api/auth/login',
     {
@@ -18,14 +18,14 @@ export async function loginRequest(credentials: AuthCredentials): Promise<AuthRe
   );
 }
 
-export async function meRequest(): Promise<AuthResponse> {
+export function meRequest(): Promise<AuthResponse> {
   return httpGet<AuthResponse>('/api/auth/me', {
     credentials: 'include',
   });
 }
 
-export async function refreshTokenRequest(): Promise<void> {
-  await httpPost<{ expiresInMins?: number }, Record<string, never>>(
+export function refreshTokenRequest(): Promise<Record<string, never>> {
+  return httpPost<{ expiresInMins?: number }, Record<string, never>>(
     '/api/auth/refresh',
     {
       expiresInMins: ACCESS_TOKEN_EXPIRES_MINS,
@@ -45,6 +45,6 @@ export async function tryRefreshTokens(): Promise<boolean> {
   }
 }
 
-export async function logoutRequest(): Promise<void> {
-  await httpPost<Record<string, never>, Record<string, never>>('/api/auth/logout', {});
+export function logoutRequest(): Promise<Record<string, never>> {
+  return httpPost<Record<string, never>, Record<string, never>>('/api/auth/logout', {});
 }
