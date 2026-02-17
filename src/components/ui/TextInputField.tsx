@@ -1,5 +1,5 @@
-import { UserIcon } from './icons/UserIcon';
-import { ClearIcon } from './icons/ClearIcon';
+import { UserIcon } from '../icons/UserIcon';
+import { ClearIcon } from '../icons/ClearIcon';
 import React from 'react';
 
 interface TextInputFieldProps {

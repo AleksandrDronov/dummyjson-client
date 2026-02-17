@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import type { Product } from '../types/product';
-import { ProgressBar } from './ProgressBar';
+import { ProgressBar } from './ui/ProgressBar';
 import { compareValues, persistSortState } from '../utils/sortUtils';
 import type { SortState, SortDirection, SortKey } from '../utils/sortUtils';
 

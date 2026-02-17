@@ -1,7 +1,7 @@
 import { useForm } from '../hooks/useForm';
 import { useModal } from '../hooks/useModal';
 import type { Product, AddProductFormValues } from '../types/product';
-import { TextInputField } from './TextInputField';
+import { TextInputField } from './ui/TextInputField';
 import { ClearIcon } from './icons/ClearIcon';
 import { createProductValidator } from '../utils/productValidation';
 

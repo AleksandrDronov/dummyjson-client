@@ -7,12 +7,12 @@ import { useProductModal } from '../hooks/useProductModal';
 import { useToast } from '../hooks/useToast';
 import { ProductTable } from '../components/ProductTable';
 import { AddProductForm } from '../components/AddProductForm';
-import { Toast } from '../components/Toast';
+import { Toast } from '../components/ui/Toast';
 import { loadInitialSort, type SortState } from '../utils/sortUtils';
 import { PlusIcon } from '../components/icons/PlusIcon';
 import { ArrowsIcon } from '../components/icons/ArrowsIcon';
 import { Pagination } from '../components/icons/Pagination';
-import { SearchField } from '../components/SearchField';
+import { SearchField } from '../components/ui/SearchField';
 
 export function ProductsPage() {
   const { logout } = useAuth();

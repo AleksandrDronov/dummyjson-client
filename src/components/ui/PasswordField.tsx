@@ -1,7 +1,7 @@
 import React from 'react';
-import { EyeIcon } from './icons/EyeIcon';
-import { EyeOffIcon } from './icons/EyeOffIcon';
-import { LockIcon } from './icons/LockIcon';
+import { EyeIcon } from '../icons/EyeIcon';
+import { EyeOffIcon } from '../icons/EyeOffIcon';
+import { LockIcon } from '../icons/LockIcon';
 
 interface PasswordFieldProps {
   value: string;
