@@ -10,6 +10,13 @@ export interface Product {
   thumbnail: string;
 }
 
+export interface AddProductFormValues {
+  title: string;
+  price: string;
+  brand: string;
+  sku: string;
+}
+
 export interface ProductsResponse {
   products: Product[];
   total: number;

@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
+import { useForm } from '../hooks/useForm';
 import type { AuthCredentials } from '../types/auth';
 import { ApiError } from '../api/httpClient';
 import logoSrc from '../assets/logo.png';
 import { TextInputField } from './TextInputField';
 import { PasswordField } from './PasswordField';
 import { CheckboxField } from './CheckboxField';
+import { createLoginValidator } from '../utils/loginValidation';
 
-interface FieldErrors {
+interface FieldErrors extends Record<string, string | undefined> {
   username?: string;
   password?: string;
   apiError?: string;
@@ -21,82 +23,43 @@ const initialValues: AuthCredentials = {
 
 export function LoginForm() {
   const { login, isLoading } = useAuth();
-  const [values, setValues] = useState(initialValues);
-  const [errors, setErrors] = useState<FieldErrors>({});
-  const [touched, setTouched] = useState({
-    username: false,
-    password: false,
-  });
   const [showPassword, setShowPassword] = useState(false);
 
-  const validate = (current: AuthCredentials): FieldErrors => {
-    const nextErrors: FieldErrors = {};
+  const validate = createLoginValidator();
 
-    if (!current.username.trim()) {
-      nextErrors.username = 'Введите логин';
-    }
-    if (!current.password.trim()) {
-      nextErrors.password = 'Введите пароль';
-    }
-    return nextErrors;
-  };
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, type, checked, value } = event.target;
-
-    setValues((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
-
-    setErrors((prev) => ({
-      ...prev,
-      [name]: undefined,
-    }));
-  };
-
-  const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-    const { name } = event.target;
-
-    setTouched((prev) => ({
-      ...prev,
-      [name]: true,
-    }));
-
-    setErrors((prev) => ({
-      ...prev,
-      ...validate(values),
-    }));
-  };
-
-  const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const validationErrors = validate(values);
-    setErrors(validationErrors);
-    setTouched({ username: true, password: true });
-
-    if (validationErrors.username || validationErrors.password) {
-      return;
-    }
-
-    try {
-      setErrors({});
-      await login(values);
-    } catch (error) {
-      if (error instanceof ApiError) {
-        const body = error.body as { message?: string; error?: string } | undefined;
-        const message = body?.message ?? body?.error ?? 'Не удалось выполнить вход';
-        setErrors({ apiError: message });
-      } else {
-        setErrors({ apiError: 'Произошла неизвестная ошибка' });
+  const {
+    values,
+    errors,
+    touched,
+    handleChange,
+    handleBlur,
+    handleSubmit,
+    setFieldValue,
+    setFieldError,
+    setFieldTouched,
+  } = useForm<AuthCredentials, FieldErrors>({
+    initialValues,
+    validate,
+    onSubmit: async (values) => {
+      try {
+        await login(values);
+      } catch (error) {
+        if (error instanceof ApiError) {
+          const body = error.body as { message?: string; error?: string } | undefined;
+          const message = body?.message ?? body?.error ?? 'Не удалось выполнить вход';
+          setFieldError('apiError', message);
+        } else {
+          setFieldError('apiError', 'Произошла неизвестная ошибка');
+        }
       }
-    }
-  };
+    },
+    getAllTouched: () => ({ username: true, password: true, rememberMe: false }),
+  });
 
   const handleClearUsername = () => {
-    setValues((prev) => ({ ...prev, username: '' }));
-    setErrors((prev) => ({ ...prev, username: undefined }));
-    setTouched((prev) => ({ ...prev, username: false }));
+    setFieldValue('username', '');
+    setFieldError('username', undefined);
+    setFieldTouched('username', false);
   };
 
   return (

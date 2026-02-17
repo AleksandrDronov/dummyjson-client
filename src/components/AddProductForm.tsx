@@ -1,21 +1,16 @@
-import { useState, useEffect, useCallback } from 'react';
-import type { Product } from '../types/product';
+import { useForm } from '../hooks/useForm';
+import { useModal } from '../hooks/useModal';
+import type { Product, AddProductFormValues } from '../types/product';
 import { TextInputField } from './TextInputField';
 import { ClearIcon } from './icons/ClearIcon';
+import { createProductValidator } from '../utils/productValidation';
 
 interface AddProductFormProps {
   onProductAdded: (product: Product) => void;
   onClose: () => void;
 }
 
-interface AddProductFormValues {
-  title: string;
-  price: string;
-  brand: string;
-  sku: string;
-}
-
-interface AddProductFormErrors {
+interface AddProductFormErrors extends Record<string, string | undefined> {
   title?: string;
   price?: string;
   brand?: string;
@@ -29,124 +24,40 @@ const initialValues: AddProductFormValues = {
   sku: '',
 };
 
+const generateId = () => -(Date.now() + Math.random());
+
 export function AddProductForm({ onProductAdded, onClose }: AddProductFormProps) {
-  const [values, setValues] = useState(initialValues);
-  const [errors, setErrors] = useState<AddProductFormErrors>({});
-  const [touched, setTouched] = useState({
-    title: false,
-    price: false,
-    brand: false,
-    sku: false,
-  });
-  const [isOpen, setIsOpen] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
+  const { isOpen, isClosing, handleClose, handleBackdropClick } = useModal({ onClose });
 
-  const handleClose = useCallback(() => {
-    setIsClosing(true);
-    setTimeout(() => {
-      onClose();
-    }, 300);
-  }, [onClose]);
+  const validate = createProductValidator();
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsOpen(true);
-    }, 10);
-    return () => clearTimeout(timer);
-  }, []);
+  const { values, errors, touched, handleChange, handleBlur, handleSubmit } = useForm<
+    AddProductFormValues,
+    AddProductFormErrors
+  >({
+    initialValues,
+    validate,
+    onSubmit: async (values) => {
+      const priceNumber = Number(values.price.replace(',', '.'));
+      const productId = generateId();
 
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        handleClose();
-      }
-    };
+      const newProduct: Product = {
+        id: productId,
+        title: values.title.trim(),
+        brand: values.brand.trim(),
+        sku: values.sku.trim(),
+        price: priceNumber,
+        rating: 0,
+        stock: 0,
+        category: 'custom',
+        thumbnail: '',
+      };
 
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [handleClose]);
-
-  const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (event.target === event.currentTarget) {
+      onProductAdded(newProduct);
       handleClose();
-    }
-  };
-
-  const validate = (current: AddProductFormValues): AddProductFormErrors => {
-    const next: AddProductFormErrors = {};
-    if (!current.title.trim()) {
-      next.title = 'Введите наименование';
-    }
-    if (!current.brand.trim()) {
-      next.brand = 'Введите вендора';
-    }
-    if (!current.sku.trim()) {
-      next.sku = 'Введите артикул';
-    }
-    const priceNumber = Number(current.price.replace(',', '.'));
-    if (!current.price.trim() || Number.isNaN(priceNumber) || priceNumber <= 0) {
-      next.price = 'Введите корректную цену';
-    }
-    return next;
-  };
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setValues((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    setErrors((prev) => ({
-      ...prev,
-      [name]: undefined,
-    }));
-  };
-
-  const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-    const { name } = event.target;
-    setTouched((prev) => ({
-      ...prev,
-      [name]: true,
-    }));
-    setErrors((prev) => ({
-      ...prev,
-      ...validate(values),
-    }));
-  };
-
-  const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const validationErrors = validate(values);
-    setErrors(validationErrors);
-    setTouched({
-      title: true,
-      price: true,
-      brand: true,
-      sku: true,
-    });
-
-    if (Object.keys(validationErrors).length > 0) {
-      return;
-    }
-
-    const priceNumber = Number(values.price.replace(',', '.'));
-
-    const newProduct: Product = {
-      id: -Date.now(),
-      title: values.title.trim(),
-      brand: values.brand.trim(),
-      sku: values.sku.trim(),
-      price: priceNumber,
-      rating: 0,
-      stock: 0,
-      category: 'custom',
-      thumbnail: '',
-    };
-
-    onProductAdded(newProduct);
-    setValues(initialValues);
-    handleClose();
-  };
+    },
+    getAllTouched: () => ({ title: true, price: true, brand: true, sku: true }),
+  });
 
   return (
     <div
