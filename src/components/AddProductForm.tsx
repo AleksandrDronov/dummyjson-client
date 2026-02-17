@@ -25,11 +25,10 @@ const initialValues: AddProductFormValues = {
 };
 
 const generateId = () => -(Date.now() + Math.random());
+const validate = createProductValidator();
 
 export function AddProductForm({ onProductAdded, onClose }: AddProductFormProps) {
   const { isOpen, isClosing, handleClose, handleBackdropClick } = useModal({ onClose });
-
-  const validate = createProductValidator();
 
   const { values, errors, touched, handleChange, handleBlur, handleSubmit } = useForm<
     AddProductFormValues,

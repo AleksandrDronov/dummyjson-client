@@ -1,13 +1,15 @@
-import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useForm } from '../hooks/useForm';
+import { useState } from 'react';
 import type { AuthCredentials } from '../types/auth';
-import { ApiError } from '../api/httpClient';
-import logoSrc from '../assets/logo.png';
 import { TextInputField } from './TextInputField';
 import { PasswordField } from './PasswordField';
 import { CheckboxField } from './CheckboxField';
+import { ApiErrorMessage } from './ApiErrorMessage';
+import { FormHeader } from './FormHeader';
+import { FormFooter } from './FormFooter';
 import { createLoginValidator } from '../utils/loginValidation';
+import { getErrorMessage } from '../utils/apiError';
 
 interface FieldErrors extends Record<string, string | undefined> {
   username?: string;
@@ -21,11 +23,11 @@ const initialValues: AuthCredentials = {
   rememberMe: false,
 };
 
+const validate = createLoginValidator();
+
 export function LoginForm() {
   const { login, isLoading } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
-
-  const validate = createLoginValidator();
 
   const {
     values,
@@ -44,13 +46,8 @@ export function LoginForm() {
       try {
         await login(values);
       } catch (error) {
-        if (error instanceof ApiError) {
-          const body = error.body as { message?: string; error?: string } | undefined;
-          const message = body?.message ?? body?.error ?? 'Не удалось выполнить вход';
-          setFieldError('apiError', message);
-        } else {
-          setFieldError('apiError', 'Произошла неизвестная ошибка');
-        }
+        const message = getErrorMessage(error);
+        setFieldError('apiError', message);
       }
     },
     getAllTouched: () => ({ username: true, password: true, rememberMe: false }),
@@ -65,12 +62,7 @@ export function LoginForm() {
   return (
     <div className="auth-wrapper">
       <form className="card auth-card" onSubmit={handleSubmit} noValidate>
-        <div className="logo-wrapper">
-          <img src={logoSrc} alt="logo" className="logo" />
-        </div>
-
-        <h1 className="card-title">Добро пожаловать!</h1>
-        <p className="card-subtitle">Пожалуйста, авторизируйтесь</p>
+        <FormHeader />
 
         <TextInputField
           name="username"
@@ -105,24 +97,13 @@ export function LoginForm() {
           label="Запомнить меня"
         />
 
-        {errors.apiError && <div className="form-error">{errors.apiError}</div>}
+        <ApiErrorMessage message={errors.apiError} />
 
         <button type="submit" className="button primary" disabled={isLoading}>
           {isLoading ? 'Вход...' : 'Войти'}
         </button>
 
-        <p className="auth-hint">
-          Можно использовать тестовые данные из DummyJSON, например
-          <br />
-          <code>emilys / emilyspass</code> (логин / пароль)
-        </p>
-
-        <div className="register-link">
-          <span>Нет аккаунта? </span>
-          <a href="#" className="register-link__a">
-            Создать
-          </a>
-        </div>
+        <FormFooter />
       </form>
     </div>
   );
