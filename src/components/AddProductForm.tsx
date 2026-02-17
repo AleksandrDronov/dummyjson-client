@@ -5,6 +5,7 @@ import { TextInputField } from './ui/TextInputField';
 import { ClearIcon } from './icons/ClearIcon';
 import { createProductValidator } from '../utils/productValidation';
 import { createProductFromForm } from '../utils/productFactory';
+import { addProductFormFields } from '../config/formFields';
 
 interface AddProductFormProps {
   onProductAdded: (product: Product) => void;
@@ -63,45 +64,19 @@ export function AddProductForm({ onProductAdded, onClose }: AddProductFormProps)
           </button>
         </div>
         <form onSubmit={handleSubmit} noValidate>
-          <TextInputField
-            name="title"
-            label="Наименование"
-            value={values.title}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={errors.title}
-            touched={touched.title}
-          />
-
-          <TextInputField
-            name="price"
-            label="Цена"
-            value={values.price}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={errors.price}
-            touched={touched.price}
-          />
-
-          <TextInputField
-            name="brand"
-            label="Вендор"
-            value={values.brand}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={errors.brand}
-            touched={touched.brand}
-          />
-
-          <TextInputField
-            name="sku"
-            label="Артикул"
-            value={values.sku}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={errors.sku}
-            touched={touched.sku}
-          />
+          {addProductFormFields.map((field) => (
+            <TextInputField
+              key={field.name}
+              name={field.name}
+              label={field.label}
+              value={values[field.name]}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              error={errors[field.name]}
+              touched={touched[field.name]}
+              type={field.type}
+            />
+          ))}
 
           <div className="modal-actions">
             <button type="button" className="button secondary" onClick={handleClose}>

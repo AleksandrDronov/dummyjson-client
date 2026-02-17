@@ -2,7 +2,7 @@ import { UserIcon } from '../icons/UserIcon';
 import { ClearIcon } from '../icons/ClearIcon';
 import React from 'react';
 
-interface TextInputFieldProps {
+interface TextInputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
   name: string;
   label?: string;
   value: string;
@@ -28,6 +28,7 @@ export function TextInputField({
   touched,
   hasAppendIcon = false,
   hasPrependIcon = false,
+  ...props
 }: TextInputFieldProps) {
   return (
     <div className="field-group">
@@ -44,6 +45,7 @@ export function TextInputField({
           disabled={disabled}
           className={touched && error ? 'input error' : 'input'}
           required
+          {...props}
         />
         {hasAppendIcon && <span className="input-icon" aria-hidden="true">
           <UserIcon />
