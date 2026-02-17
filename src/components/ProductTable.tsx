@@ -1,8 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import type { Product } from '../types/product';
 import { ProgressBar } from './ui/ProgressBar';
-import { compareValues, persistSortState } from '../utils/sortUtils';
-import type { SortState, SortDirection, SortKey } from '../utils/sortUtils';
+import { SortIndicator } from './ui/SortIndicator';
+import { persistSortState } from '../utils/sortUtils';
+import type { SortState, SortKey } from '../utils/sortUtils';
+import { useProductSorting } from '../hooks/useProductSorting';
 
 interface ProductTableProps {
   products: Product[];
@@ -21,27 +23,7 @@ export function ProductTable({
 }: ProductTableProps) {
   const [internalSort] = useState<SortState>(sort);
 
-  const sortedProducts = useMemo(() => {
-    const currentSort = sort ?? internalSort;
-    const copy = [...products];
-    copy.sort((a, b) => {
-      switch (currentSort.key) {
-        case 'title':
-          return compareValues(a.title, b.title, currentSort.direction);
-        case 'price':
-          return compareValues(a.price, b.price, currentSort.direction);
-        case 'brand':
-          return compareValues(a.brand, b.brand, currentSort.direction);
-        case 'sku':
-          return compareValues(a.sku, b.sku, currentSort.direction);
-        case 'rating':
-          return compareValues(a.rating, b.rating, currentSort.direction);
-        default:
-          return 0;
-      }
-    });
-    return copy;
-  }, [products, sort, internalSort]);
+  const sortedProducts = useProductSorting(products, sort ?? internalSort);
 
   const handleSortClick = (key: SortKey) => {
     const next: SortState =
@@ -135,10 +117,3 @@ export function ProductTable({
   );
 }
 
-interface SortIndicatorProps {
-  direction: SortDirection;
-}
-
-function SortIndicator({ direction }: SortIndicatorProps) {
-  return <span className="sort-indicator">{direction === 'asc' ? '▲' : '▼'}</span>;
-}

@@ -4,6 +4,7 @@ import type { Product, AddProductFormValues } from '../types/product';
 import { TextInputField } from './ui/TextInputField';
 import { ClearIcon } from './icons/ClearIcon';
 import { createProductValidator } from '../utils/productValidation';
+import { createProductFromForm } from '../utils/productFactory';
 
 interface AddProductFormProps {
   onProductAdded: (product: Product) => void;
@@ -24,7 +25,6 @@ const initialValues: AddProductFormValues = {
   sku: '',
 };
 
-const generateId = () => -(Date.now() + Math.random());
 const validate = createProductValidator();
 
 export function AddProductForm({ onProductAdded, onClose }: AddProductFormProps) {
@@ -37,21 +37,7 @@ export function AddProductForm({ onProductAdded, onClose }: AddProductFormProps)
     initialValues,
     validate,
     onSubmit: async (values) => {
-      const priceNumber = Number(values.price.replace(',', '.'));
-      const productId = generateId();
-
-      const newProduct: Product = {
-        id: productId,
-        title: values.title.trim(),
-        brand: values.brand.trim(),
-        sku: values.sku.trim(),
-        price: priceNumber,
-        rating: 0,
-        stock: 0,
-        category: 'custom',
-        thumbnail: '',
-      };
-
+      const newProduct = createProductFromForm(values);
       onProductAdded(newProduct);
       handleClose();
     },

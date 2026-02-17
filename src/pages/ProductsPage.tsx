@@ -1,25 +1,29 @@
-import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import type { Product } from '../types/product';
 import { useProducts } from '../hooks/useProducts';
 import { usePagination } from '../hooks/usePagination';
 import { useProductModal } from '../hooks/useProductModal';
 import { useToast } from '../hooks/useToast';
+import { useProductsPageState } from '../hooks/useProductsPageState';
 import { ProductTable } from '../components/ProductTable';
 import { AddProductForm } from '../components/AddProductForm';
 import { Toast } from '../components/ui/Toast';
-import { loadInitialSort, type SortState } from '../utils/sortUtils';
-import { PlusIcon } from '../components/icons/PlusIcon';
-import { ArrowsIcon } from '../components/icons/ArrowsIcon';
+import { ProductPageHeader } from '../components/ProductPageHeader';
+import { ProductPageToolbar } from '../components/ProductPageToolbar';
 import { Pagination } from '../components/icons/Pagination';
-import { SearchField } from '../components/ui/SearchField';
 
 export function ProductsPage() {
   const { logout } = useAuth();
-  const [localProducts, setLocalProducts] = useState<Product[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sort, setSort] = useState<SortState>(() => loadInitialSort());
-  const [page, setPage] = useState(1);
+  const {
+    localProducts,
+    searchQuery,
+    sort,
+    page,
+    setSort,
+    setPage,
+    handleSearchChange,
+    handleProductAdded,
+  } = useProductsPageState();
 
   const { products, isLoading, error, totalPages, total, refresh } = useProducts({
     searchQuery,
@@ -34,52 +38,32 @@ export function ProductsPage() {
     setPage,
   });
 
-  const { isAddModalOpen, handleOpenAddModal, handleCloseAddModal, handleProductAdded } =
-    useProductModal({
-      onProductAdded: (product: Product) => {
-        setLocalProducts((prev) => [product, ...prev]);
-      },
-    });
+  const {
+    isAddModalOpen,
+    handleOpenAddModal,
+    handleCloseAddModal,
+    handleProductAdded: handleModalProductAdded,
+  } = useProductModal({
+    onProductAdded: handleProductAdded,
+  });
 
   const { toastMessage, showToast, handleToastClose } = useToast();
 
   const handleProductAddedWithToast = (product: Product) => {
-    handleProductAdded(product);
+    handleModalProductAdded(product);
     showToast('Товар успешно добавлен');
-  };
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(event.target.value);
-    setPage(1);
   };
 
   return (
     <div className="page">
-      <header className="page-header">
-        <h1>Товары</h1>
-        <SearchField value={searchQuery} onChange={handleSearchChange} />
-        <button type="button" className="button secondary small" onClick={logout}>
-          Выйти
-        </button>
-      </header>
+      <ProductPageHeader
+        searchQuery={searchQuery}
+        onSearchChange={handleSearchChange}
+        onLogout={logout}
+      />
 
       <main className="page-content">
-        <div className="toolbar">
-          <h2>Все позиции</h2>
-          <button
-            type="button"
-            className="button secondary small"
-            onClick={refresh}
-            title="Обновить"
-            aria-label="Обновить список товаров"
-          >
-            <ArrowsIcon />
-          </button>
-          <button type="button" className="button primary small" onClick={handleOpenAddModal}>
-            <PlusIcon />
-            Добавить
-          </button>
-        </div>
+        <ProductPageToolbar onRefresh={refresh} onOpenAddModal={handleOpenAddModal} />
 
         <ProductTable
           products={products}

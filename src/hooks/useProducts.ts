@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { Product } from '../types/product';
 import { fetchProducts } from '../api/products';
 import { useDebouncedValue } from './useDebouncedValue';
+import { useProductFiltering } from './useProductFiltering';
 
 const PAGE_SIZE = 5;
 
@@ -51,12 +52,7 @@ export function useProducts({ searchQuery, page, localProducts }: UseProductsPro
     return () => controller.abort();
   }, [debouncedSearch, page, fetchData]);
 
-  const allProducts = useMemo(() => {
-    const filteredLocal = localProducts.filter((product) =>
-      product.title.toLowerCase().includes(debouncedSearch.toLowerCase()),
-    );
-    return [...filteredLocal, ...products];
-  }, [localProducts, products, debouncedSearch]);
+  const allProducts = useProductFiltering(products, localProducts, debouncedSearch);
 
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
