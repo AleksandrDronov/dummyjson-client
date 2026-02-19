@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 const PAGE_SIZE = 5;
 
@@ -17,7 +17,10 @@ export function usePagination({ totalPages, total, page, setPage }: UsePaginatio
     }
   }, [totalPages, setPage]);
 
-  const paginationInfo = `${(page - 1) * PAGE_SIZE + 1}-${Math.min(page * PAGE_SIZE, total)} из ${total}`;
+  const paginationInfo = useMemo(() => 
+    `${(page - 1) * PAGE_SIZE + 1}-${Math.min(page * PAGE_SIZE, total)} из ${total}`,
+    [page, total]
+  );
 
   return {
     handlePageChange,

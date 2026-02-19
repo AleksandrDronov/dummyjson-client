@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useMemo } from 'react';
 import type { Product } from '../types/product';
 import { fetchProducts } from '../api/products';
 import { useDebouncedValue } from './useDebouncedValue';
@@ -54,7 +54,7 @@ export function useProducts({ searchQuery, page, localProducts }: UseProductsPro
 
   const allProducts = useProductFiltering(products, localProducts, debouncedSearch);
 
-  const totalPages = Math.ceil(total / PAGE_SIZE);
+  const totalPages = useMemo(() => Math.ceil(total / PAGE_SIZE), [total]);
 
   const refresh = useCallback(() => {
     const controller = new AbortController();
